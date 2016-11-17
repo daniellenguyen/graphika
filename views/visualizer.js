@@ -1,8 +1,8 @@
 // Draws all nodes in the given JSON file
 
 // Defines the dimensions of the visualization
-var width = 10000,
-height = 10000;
+var width = 5000,
+    height = 5000;
 
 // this is an svg container.
 // holds the visualization.
@@ -18,15 +18,16 @@ d3.json("test1.json", function(error, graph) {
     // prop is dynamic and we only know it at runtime.
     for (var prop in graph) {
     	var cx = graph[prop].coords[0];
-    	var cy = graph[prop].coords[1];
-    	var r = graph[prop].coords[3];
-    	var idk = graph[prop].coords[2]; // always 0.0
-    
+    	var cy = graph[prop].coords[1];      
+      var cz = graph[prop].coords[2]; 
+    	var r  = graph[prop].coords[3];
+
     	svg.append("circle")
-           .attr("cx", cx)
-           .attr("cy", cy)
-    	   .attr("r", r)
-           .attr("fill", "gray")
+           .attr("cx", 1000 + cx)
+           .attr("cy", 1000 + cy * -1)
+           .attr("cz", cz)
+    	     .attr("r", r)
+           .attr("fill", "steelblue")
            .attr("stroke", "black");
     }
 
