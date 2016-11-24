@@ -3,7 +3,6 @@ import math, java
 import os, sys
 import classpath
 
-
 path = os.path.realpath(__file__)
 toolkit = os.path.join(os.path.dirname(path), 'gephi-toolkit.jar')
 classpath.addFile(toolkit)
@@ -36,9 +35,7 @@ def buildGraph(graphID):
     with open('test_data/%s_clus_viz.json' % graphID) as f:
         clusterDict = json.loads(f.read())
 
-    numNodes = len(edgesDict)
-
-    for nodeID, _ in edgesDict.iteritems():
+    for nodeID in edgesDict.iterkeys():
         graph.addNode(graphModel.factory().newNode(nodeID))
 
     for sourceID, targets in edgesDict.iteritems(): 
@@ -47,14 +44,14 @@ def buildGraph(graphID):
             targetNode = graph.getNode(targetID)
             graph.addEdge(graphModel.factory().newEdge(sourceNode, targetNode))
 
-    # turn off edges and make background black
-    PreviewController.getModel().getProperties().putValue("edge.show", False)
-    PreviewController.getModel().getProperties().putValue("background-color", java.awt.Color.BLACK)
+    graphProperties = PreviewController.getModel().getProperties()
+    graphProperties.putValue("edge.show", False) # turn off edges
+    graphProperties.putValue("background-color", java.awt.Color.BLACK) # make background black
 
     graph = GraphController.getModel().getGraph()
     setNodePos(graph, nodeDict)
     setNodeColor(graph, nodeDict, clusterDict)
-    setNodeSize(graph, numNodes)
+    setNodeSize(graph)
 
 # mutates graph
 def setNodePos(graph, nodeInfo):
@@ -73,19 +70,21 @@ def setNodeColor(graph, nodeInfo, clusterInfo):
         node.getNodeData().setColor(r, g, b)
 
 # mutates graph
-# idk how this function works, I mostly just copypasted it from pygephi_layout.py
-def setNodeSize(graph, numNodes):
-    split_table = [(7000,20),(15000,200)]
-    min_size = 0
-    cur_smallest_dif_to_split_table_point = 100000
-    for s in split_table:
-        if abs(numNodes - s[0]) < cur_smallest_dif_to_split_table_point:
-            cur_smallest_dif_to_split_table_point = abs(numNodes - s[0])
-            min_size = s[1]
+def setNodeSize(graph):
+    numNodes = len(list(graph.getNodes()))
+    splitTable = [(7000, 20), (15000, 200)]
+    minSize = 0
+    minDifToSplitTablePoint = 100000
+
+    for a, b in splitTable:
+        if abs(numNodes - a) < minDifToSplitTablePoint:
+            minDifToSplitTablePoint = abs(numNodes - a)
+            minSize = b
 
     # set node size to log indegree * min_size
     for node in graph.getNodes():
-        node.getNodeData().setSize(math.sqrt(graph.getInDegree(node) + 1) * min_size * 0.1) # avoid problem with 0 sizes
+        node.getNodeData().setSize(math.sqrt(graph.getInDegree(node) + 1) * minSize * 0.1) # avoid problem with 0 sizes
+
 
 def saveToFile(fileName):
     exporter = ExportController.getExporter('png')
