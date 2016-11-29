@@ -1,5 +1,6 @@
 import os
 import json
+import math
 from tulip import tlp
 
 '''
@@ -10,8 +11,8 @@ algorithm options:
 	"FM^3 (OGDF)"
 	"Fast Multipole Embedder (OGDF)"
 	"Fast Multipole Multilevel Embedder (OGDF)"
-	"GRIP"
 	"Pivot MDS (OGDF)"
+	"GRIP" (kind of slow for larger data sets)
 	- (weird result) "Frutcherman Reingold (OGDF)"
 	- (weird result) "GEM Frick (OGDF)"
 	- (slow) "GEM (Frick)"
@@ -43,19 +44,58 @@ def runLayout(graphID, algorithm, **extraParams):
 	if not successful:
 		raise Exception(errorMsg)
 
-	maxX, maxY = 0, 0
 	nameToCoords = {}
-
 	for nodeName in linksJson.keys():
 		x, y, z = layout[nameToNode[nodeName]]
 		nameToCoords[nodeName] = x, y
+
+	normalizeCoords(nameToCoords)
+	reduceGaps(nameToCoords)
+	normalizeCoords(nameToCoords)
+	makeCircular(nameToCoords)
+
+	return nameToCoords
+
+
+def normalizeCoords(nodeDict):
+	maxX, maxY = 0.0, 0.0
+
+	for x, y in nodeDict.values():
 		maxX = max(x, maxX)
 		maxY = max(y, maxY)
 
-	for node, (x, y) in nameToCoords.items():
-		nameToCoords[node] = x / maxX, y / maxY
+	for node, (x, y) in nodeDict.items():
+		nodeDict[node] = x / maxX, y / maxY
 
-	return nameToCoords
+
+def reduceGaps(nodeDict):
+	maxGap = 0.02
+
+	byXCoord = sorted(list(nodeDict.items()), key=lambda node: node[1][0])
+	totalReduction = 0
+	for (n1, (x1, y1)), (_, (x2, _)) in zip(byXCoord, byXCoord[1:]):
+		nodeDict[n1] = x1 - totalReduction, y1
+		totalReduction += max(0, x2 - x1 - maxGap)
+	n, (x, y) = byXCoord[-1]
+	nodeDict[n] = x - totalReduction, y
+
+	byYCoord = sorted(list(nodeDict.items()), key=lambda node: node[1][1])
+	totalReduction = 0
+	for (n1, (x1, y1)), (_, (_, y2)) in zip(byYCoord, byYCoord[1:]):
+		nodeDict[n1] = x1, y1 - totalReduction
+		totalReduction += max(0, y2 - y1 - maxGap)
+	n, (x, y) = byYCoord[-1]
+	nodeDict[n] = x, y - totalReduction
+
+
+def makeCircular(nodeDict):
+	for node, (x, y) in nodeDict.items():
+		x -= 0.5
+		y -= 0.5
+		r = max(abs(x), abs(y))
+		x = r * math.cos(math.atan2(y, x))
+		y = r * math.sin(math.atan2(y, x))
+		nodeDict[node] = x, y
 
 
 def writeLayout(coords, graphID):
