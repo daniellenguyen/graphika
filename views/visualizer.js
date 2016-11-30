@@ -1,8 +1,9 @@
 // Draws all nodes in the given JSON file
 
 // Defines the dimensions of the visualization
-var width = 5000,
-    height = 5000;
+
+var width = 2000,
+    height = 2000;
 
 // this is an svg container.
 // holds the visualization.
