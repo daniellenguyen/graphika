@@ -48,7 +48,6 @@ def buildGraph(graphID):
     graphProperties.putValue("edge.show", False) # turn off edges
     graphProperties.putValue("background-color", java.awt.Color.BLACK) # make background black
 
-    graph = GraphController.getModel().getGraph()
     setNodePos(graph, nodeDict)
     setNodeColor(graph, nodeDict, clusterDict)
     setNodeSize(graph)
@@ -71,20 +70,21 @@ def setNodeColor(graph, nodeInfo, clusterInfo):
 
 # mutates graph
 def setNodeSize(graph):
-    numNodes = len(list(graph.getNodes()))
-    splitTable = [(7000, 20), (15000, 200)]
-    minSize = 0
-    minDifToSplitTablePoint = 100000
+    # numNodes = len(list(graph.getNodes()))
+    # splitTable = [(7000, 20), (15000, 200)]
+    # minSize = 0
+    # minDifToSplitTablePoint = 100000
 
-    for a, b in splitTable:
-        if abs(numNodes - a) < minDifToSplitTablePoint:
-            minDifToSplitTablePoint = abs(numNodes - a)
-            minSize = b
+    # for a, b in splitTable:
+    #     if abs(numNodes - a) < minDifToSplitTablePoint:
+    #         minDifToSplitTablePoint = abs(numNodes - a)
+    #         minSize = b
 
-    # set node size to log indegree * min_size
+    minSize = 15
+
+    # set node size to sqrt indegree * min_size
     for node in graph.getNodes():
         node.getNodeData().setSize(math.sqrt(graph.getInDegree(node) + 1) * minSize * 0.1) # avoid problem with 0 sizes
-
 
 def saveToFile(fileName):
     exporter = ExportController.getExporter('png')
