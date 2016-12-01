@@ -1,9 +1,13 @@
 var fs = require('fs');
 var page = require('webpage').create();
-page.viewportSize = { width: 75, height: 75 };
+page.viewportSize = { width: 1280, height: 1024 };
+page.zoomFactor = 0.4;
 var url = 'file://' + fs.absolute('./views/index.html');
 
 page.open(url, function(status) {
-    page.render('graph_render.png');
-  phantom.exit();
+	setTimeout(function() {
+		page.render('graph_render.png');
+        phantom.exit();
+	}, 2000);
+    
 });
