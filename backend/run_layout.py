@@ -49,21 +49,26 @@ def runLayout(graphID, algorithm, **extraParams):
 		x, y, z = layout[nameToNode[nodeName]]
 		nameToCoords[nodeName] = x, y
 
-	normalizeCoords(nameToCoords)
+	normalize(nameToCoords)
 	reduceGaps(nameToCoords)
-	normalizeCoords(nameToCoords)
-	makeCircular(nameToCoords)
+	normalize(nameToCoords)
+	# roundify(nameToCoords)
 
 	return nameToCoords
 
+# make all coordinates lie within the range [0, 1]
+def normalize(nodeDict):
+	minX = min(x for x, y in nodeDict.values())
+	minY = min(y for x, y in nodeDict.values())
 
-def normalizeCoords(nodeDict):
-	maxX, maxY = 0.0, 0.0
+	# make sure coordinates start at 0
+	for node, (x, y) in nodeDict.items():
+		nodeDict[node] = x - minX, y - minY
 
-	for x, y in nodeDict.values():
-		maxX = max(x, maxX)
-		maxY = max(y, maxY)
+	maxX = max(x for x, y in nodeDict.values())
+	maxY = max(y for x, y in nodeDict.values())
 
+	# make sure coordinates go up to 1
 	for node, (x, y) in nodeDict.items():
 		nodeDict[node] = x / maxX, y / maxY
 
@@ -73,22 +78,18 @@ def reduceGaps(nodeDict):
 
 	byXCoord = sorted(list(nodeDict.items()), key=lambda node: node[1][0])
 	totalReduction = 0
-	for (n1, (x1, y1)), (_, (x2, _)) in zip(byXCoord, byXCoord[1:]):
-		nodeDict[n1] = x1 - totalReduction, y1
-		totalReduction += max(0, x2 - x1 - maxGap)
-	n, (x, y) = byXCoord[-1]
-	nodeDict[n] = x - totalReduction, y
+	for (_, (prevX, _)), (n, (x, y)) in zip(byXCoord, byXCoord[1:]):
+		totalReduction += max(0, x - prevX - maxGap)
+		nodeDict[n] = x - totalReduction, y
 
 	byYCoord = sorted(list(nodeDict.items()), key=lambda node: node[1][1])
 	totalReduction = 0
-	for (n1, (x1, y1)), (_, (_, y2)) in zip(byYCoord, byYCoord[1:]):
-		nodeDict[n1] = x1, y1 - totalReduction
-		totalReduction += max(0, y2 - y1 - maxGap)
-	n, (x, y) = byYCoord[-1]
-	nodeDict[n] = x, y - totalReduction
+	for (_, (_, prevY)), (n, (x, y)) in zip(byYCoord, byYCoord[1:]):
+		totalReduction += max(0, y - prevY - maxGap)
+		nodeDict[n] = x, y - totalReduction
 
 
-def makeCircular(nodeDict):
+def roundify(nodeDict):
 	for node, (x, y) in nodeDict.items():
 		x -= 0.5
 		y -= 0.5
@@ -115,7 +116,7 @@ def writeLayout(coords, graphID):
 		}
 
 	with open('test_data/%s_clus_viz.json' % graphID, 'r') as f:
-	    with open('../views/cluster_colors.json', 'w') as to:
+		with open('../views/cluster_colors.json', 'w') as to:
 			to.write(f.read())
 
 	with open('../views/nodes.json'.format(graphID), 'w') as f:
@@ -128,4 +129,3 @@ if __name__ == '__main__':
 	coords = runLayout(graphID, algorithm)
 	print("Saving coordinates...")
 	writeLayout(coords, graphID)
-
