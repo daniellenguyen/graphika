@@ -116,10 +116,10 @@ def writeLayout(coords, graphID):
 		}
 
 	with open('test_data/%s_clus_viz.json' % graphID, 'r') as f:
-		with open('../views/cluster_colors.json', 'w') as to:
+		with open('../docs/cluster_colors.json', 'w') as to:
 			to.write(f.read())
 
-	with open('../views/nodes.json'.format(graphID), 'w') as f:
+	with open('../docs/nodes.json'.format(graphID), 'w') as f:
 		f.write(json.dumps(output))
 
 if __name__ == '__main__':
