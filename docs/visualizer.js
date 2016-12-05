@@ -33,9 +33,9 @@ d3.json("nodes.json", function(error1, graph) {
       var color = d3.color("#" + cluster_colors[node.cluster].color);
 
       svg.append("circle")
-           .attr("cx", (width / 2) + (cx * 1000))
-           .attr("cy", (height / 2) + (cy * -1) * 1000)
-           .attr("r", 17 * r)
+           .attr("cx", cx * 1000)//(width / 2) + (cx * 1000))
+           .attr("cy", cy * 1000)//(height / 2) + ((cy * -1) * 1000))
+           .attr("r", 4 * r)
            .attr("fill", color)
            .attr("stroke", "black");
      }
