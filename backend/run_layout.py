@@ -124,16 +124,21 @@ def reduceGaps(nodeDict):
             after = info['y']
             proportion = after / before
 
-import random
+
 def roundify(nodeDict):
     for info in nodeDict.values():
+        # scale values from [0, 1] to [-1, 1]
         x = 2 * info['x'] - 1
         y = 2 * info['y'] - 1
+
+        # move values that are outside the circle to the edge of the circle
         if math.sqrt(x*x + y*y) > 1:
-            if random.choice([True, False]):
+            if abs(y) > abs(x): # random.choice([True, False]):
                 x = math.copysign(math.sqrt(1 - y*y), x)
             else:
                 y = math.copysign(math.sqrt(1 - x*x), y)
+
+        # scale values back to [0, 1]
         info['x'] = (x + 1) / 2
         info['y'] = (y + 1) / 2
 
