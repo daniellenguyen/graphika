@@ -133,7 +133,7 @@ def roundify(nodeDict):
 
         # move values that are outside the circle to the edge of the circle
         if math.sqrt(x*x + y*y) > 1:
-            if abs(y) > abs(x): # random.choice([True, False]):
+            if abs(y) > abs(x):
                 x = math.copysign(math.sqrt(1 - y*y), x)
             else:
                 y = math.copysign(math.sqrt(1 - x*x), y)
@@ -163,9 +163,6 @@ def writeLayout(nodeDict, graphID):
     with open('../docs/nodes.json'.format(graphID), 'w') as f:
       f.write(json.dumps(output))
 
-    # with open('test_data/%s_nodes_viz.json' % graphID, 'w') as f:
-    #     f.write(json.dumps(output))
-
 if __name__ == '__main__':
     graphID = int(sys.argv[1])
     algorithm = sys.argv[2]
@@ -173,4 +170,3 @@ if __name__ == '__main__':
     coords = runLayout(graphID, algorithm)
     print("Saving coordinates...")
     writeLayout(coords, graphID)
-    # os.system('jython generate_image.py %s' % graphID)
