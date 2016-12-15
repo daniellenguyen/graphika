@@ -60,8 +60,8 @@ def runLayout(graphID, algorithm):
     normalize(nameToNodeInfo)
     reduceGaps(nameToNodeInfo)
     normalize(nameToNodeInfo)
-    # roundify(nameToNodeInfo)
-    # normalize(nameToNodeInfo)
+    roundify(nameToNodeInfo)
+    normalize(nameToNodeInfo)
 
     return nameToNodeInfo
 
@@ -127,11 +127,20 @@ def reduceGaps(nodeDict):
 
 def roundify(nodeDict):
     for info in nodeDict.values():
-        x = info['x'] - 0.5
-        y = info['y'] - 0.5
-        r = max(abs(x), abs(y))
-        info['x'] = r * math.cos(math.atan2(y, x))
-        info['y'] = r * math.sin(math.atan2(y, x))
+        # scale values from [0, 1] to [-1, 1]
+        x = 2 * info['x'] - 1
+        y = 2 * info['y'] - 1
+
+        # move values that are outside the circle to the edge of the circle
+        if math.sqrt(x*x + y*y) > 1:
+            if abs(y) > abs(x):
+                x = math.copysign(math.sqrt(1 - y*y), x)
+            else:
+                y = math.copysign(math.sqrt(1 - x*x), y)
+
+        # scale values back to [0, 1]
+        info['x'] = (x + 1) / 2
+        info['y'] = (y + 1) / 2
 
 
 def writeLayout(nodeDict, graphID):
@@ -153,7 +162,6 @@ def writeLayout(nodeDict, graphID):
 
     with open('../docs/nodes.json'.format(graphID), 'w') as f:
       f.write(json.dumps(output))
-
 
 if __name__ == '__main__':
     graphID = int(sys.argv[1])
