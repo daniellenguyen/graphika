@@ -22,7 +22,7 @@
 # here, <532> is the data set number
 # python backend/run_layout.py 532 "FM^3 (OGDF)"
 cd backend
-python run_layout.py 225 "FM^3 (OGDF)"
+python run_layout.py 1 "FM^3 (OGDF)"
 cd ..
 
 # renders the png

@@ -3,7 +3,7 @@
 // Defines the dimensions of the visualization
 
 var imageSize = Math.min($(window).width(), $(window).height());
-var nodeToImageSize = 0.04
+var nodeToImageSize = 0.07
 
 // this is an svg container.
 // holds the visualization.
@@ -16,6 +16,38 @@ var svg = d3.select('body')
        .attr("width", "100%")
        .attr("height", "100%")
        .attr("fill", "black");
+
+// makes the image for the sample question
+// for (var i = 0; i < 10; i++) {
+//     svg.append("circle")
+//        .attr("cx", 200 + (50 + i * 30))
+//        .attr("cy", 200 + 50)
+//        .attr("r",  10)
+//        .attr("fill", "white")
+//        .attr("stroke", "black");
+
+//     svg.append("circle")
+//        .attr("cx", 200 + 50)
+//        .attr("cy", 200 + (50 + i * 30))
+//        .attr("r",  10)
+//        .attr("fill", "white")
+//        .attr("stroke", "black");
+
+//     svg.append("circle")
+//        .attr("cx", 200 + (50 + i * 30))
+//        .attr("cy", 200 + 320)
+//        .attr("r",  10)
+//        .attr("fill", "white")
+//        .attr("stroke", "black");
+
+//     svg.append("circle")
+//        .attr("cx", 200 + 320)
+//        .attr("cy", 200 + (50 + i * 30))
+//        .attr("r",  10)
+//        .attr("fill", "white")
+//        .attr("stroke", "black");
+
+//    }  
 
 d3.json("nodes.json", function(error1, graph) {
   if (error1) throw error1;
@@ -33,15 +65,9 @@ d3.json("nodes.json", function(error1, graph) {
       var color = d3.color("#" + cluster_colors[node.cluster].color);
 
       svg.append("circle")
-<<<<<<< HEAD
-           .attr("cx", cx * 1000)//(width / 2) + (cx * 1000))
-           .attr("cy", cy * 1000)//(height / 2) + ((cy * -1) * 1000))
-           .attr("r", 4 * r)
-=======
-           .attr("cx", cx * imageSize)
-           .attr("cy", cy * imageSize)
+           .attr("cx", cx * imageSize + 100)
+           .attr("cy", cy * imageSize + 100)
            .attr("r",  r  * imageSize * nodeToImageSize)
->>>>>>> 430cfad4fd34b98ec833732c7852a7289ad8c2fb
            .attr("fill", color)
            .attr("stroke", "black");
      }

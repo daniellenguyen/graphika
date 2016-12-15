@@ -144,18 +144,16 @@ def writeLayout(nodeDict, graphID):
             'x' : info['x'],
             'y' : info['y'],
             'radius' : info['radius'],
-            'cluster' : nodesJson[node]['cluster'],
+            'cluster' : nodesJson[node]['cluster']
         }
 
     with open('test_data/%s_clus_viz.json' % graphID, 'r') as f:
-      with open('../views/cluster_colors.json', 'w') as to:
+      with open('../docs/cluster_colors.json', 'w') as to:
           to.write(f.read())
 
-    with open('../views/nodes.json'.format(graphID), 'w') as f:
+    with open('../docs/nodes.json'.format(graphID), 'w') as f:
       f.write(json.dumps(output))
 
-    # with open('test_data/%s_nodes_viz.json' % graphID, 'w') as f:
-    #     f.write(json.dumps(output))
 
 if __name__ == '__main__':
     graphID = int(sys.argv[1])
@@ -164,4 +162,4 @@ if __name__ == '__main__':
     coords = runLayout(graphID, algorithm)
     print("Saving coordinates...")
     writeLayout(coords, graphID)
-    # os.system('jython generate_image.py %s' % graphID)
+
