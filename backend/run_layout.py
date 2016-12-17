@@ -47,6 +47,14 @@ def runLayout(graphID, algorithm):
     if not successful:
         raise Exception(errorMsg)
 
+    # params = tlp.getDefaultPluginParameters('Fast Overlap Removal', g)
+    # params['x border'] = 5
+    # params['y border'] = 5
+    # successful, errorMsg = g.applyLayoutAlgorithm('Fast Overlap Removal', layout, params)
+
+    # if not successful:
+    #     raise Exception(errorMsg)
+
     nameToNodeInfo = {}
     for name, node in nameToNode.items():
         x, y, z = layout[node]
@@ -60,8 +68,8 @@ def runLayout(graphID, algorithm):
     normalize(nameToNodeInfo)
     reduceGaps(nameToNodeInfo)
     normalize(nameToNodeInfo)
-    roundify(nameToNodeInfo)
-    normalize(nameToNodeInfo)
+    # roundify(nameToNodeInfo)
+    # normalize(nameToNodeInfo)
 
     return nameToNodeInfo
 
@@ -96,33 +104,25 @@ def normalize(nodeDict):
 def reduceGaps(nodeDict):
     maxGap = 0.05
 
-    proportion = 1 # the fraction of the layout's original size that it currently is
-    byXCoord = sorted(nodeDict.items(), key=lambda kv: kv[1]['x'])
+    totalDifference = 0
+    byXCoord = sorted(nodeDict.values(), key=lambda info: info['x'])
 
-    for (_, prevInfo), (n, info) in zip(byXCoord, byXCoord[1:]):
-        before = info['x']
-        info['x'] *= proportion
+    for prevInfo, info in zip(byXCoord, byXCoord[1:]):
+        info['x'] -= totalDifference
+        curGap = info['x'] - prevInfo['x']
+        if curGap > maxGap:
+            totalDifference += curGap - maxGap
+            info['x'] = prevInfo['x'] + maxGap
 
-        if info['x'] - prevInfo['x'] > proportion * maxGap:
-            info['x'] = prevInfo['x'] + proportion * maxGap
+    totalDifference = 0
+    byYCoord = sorted(nodeDict.values(), key=lambda info: info['y'])
 
-        if before:
-            after = info['x']
-            proportion = after / before
-
-    proportion = 1
-    byYCoord = sorted(nodeDict.items(), key=lambda kv: kv[1]['y'])
-
-    for (_, prevInfo), (n, info) in zip(byYCoord, byYCoord[1:]):
-        before = info['y']
-        info['y'] *= proportion
-
-        if info['y'] - prevInfo['y'] > proportion * maxGap:
-            info['y'] = prevInfo['y'] + proportion * maxGap
-
-        if before:
-            after = info['y']
-            proportion = after / before
+    for prevInfo, info in zip(byYCoord, byYCoord[1:]):
+        info['y'] -= totalDifference
+        curGap = info['y'] - prevInfo['y']
+        if curGap > maxGap:
+            totalDifference += curGap - maxGap
+            info['y'] = prevInfo['y'] + maxGap
 
 
 def roundify(nodeDict):
@@ -163,8 +163,9 @@ def writeLayout(nodeDict, graphID):
     with open('../docs/nodes.json'.format(graphID), 'w') as f:
       f.write(json.dumps(output))
 
+
 if __name__ == '__main__':
-    graphID = int(sys.argv[1])
+    graphID = sys.argv[1]
     algorithm = sys.argv[2]
     print("Running layout algorithm...")
     coords = runLayout(graphID, algorithm)

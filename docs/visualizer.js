@@ -2,7 +2,7 @@
 
 // Defines the dimensions of the visualization
 
-var imageSize = Math.min($(window).width(), $(window).height());
+var imageSize = Math.max($(window).width(), $(window).height());
 var nodeToImageSize = 0.07
 
 // this is an svg container.
@@ -16,38 +16,6 @@ var svg = d3.select('body')
        .attr("width", "100%")
        .attr("height", "100%")
        .attr("fill", "black");
-
-// makes the image for the sample question
-// for (var i = 0; i < 10; i++) {
-//     svg.append("circle")
-//        .attr("cx", 200 + (50 + i * 30))
-//        .attr("cy", 200 + 50)
-//        .attr("r",  10)
-//        .attr("fill", "white")
-//        .attr("stroke", "black");
-
-//     svg.append("circle")
-//        .attr("cx", 200 + 50)
-//        .attr("cy", 200 + (50 + i * 30))
-//        .attr("r",  10)
-//        .attr("fill", "white")
-//        .attr("stroke", "black");
-
-//     svg.append("circle")
-//        .attr("cx", 200 + (50 + i * 30))
-//        .attr("cy", 200 + 320)
-//        .attr("r",  10)
-//        .attr("fill", "white")
-//        .attr("stroke", "black");
-
-//     svg.append("circle")
-//        .attr("cx", 200 + 320)
-//        .attr("cy", 200 + (50 + i * 30))
-//        .attr("r",  10)
-//        .attr("fill", "white")
-//        .attr("stroke", "black");
-
-//    }  
 
 d3.json("nodes.json", function(error1, graph) {
   if (error1) throw error1;
@@ -64,7 +32,7 @@ d3.json("nodes.json", function(error1, graph) {
       var r  = node.radius;
       var color = d3.color("#" + cluster_colors[node.cluster].color);
 
-      svg.append("circle")
+     svg.append("circle")
            .attr("cx", cx * imageSize + 100)
            .attr("cy", cy * imageSize + 100)
            .attr("r",  r  * imageSize * nodeToImageSize)
